@@ -1,4 +1,3 @@
-# Automation_Project
 # Writing a bash script to configure the Virtual Machine for hosting a web server and later automating some maintainance tasks
 # Hosting Web Server: 
   The first step is to set up a web server on the EC2 instance for hosting a website. It is also important to ensure that the apache2 server is running and it restarts automatically in case the EC2 instance reboots.
