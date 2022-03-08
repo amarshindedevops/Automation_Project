@@ -42,3 +42,37 @@ aws s3 \
 #Copy the /tmp/${myname}-httpd-logs-${timestamp}.tar to s3 bucket(upgrad-amarshinde)
 cp /tmp/${myname}-httpd-logs-${timestamp}.tar \
 s3://${s3_bucket}/${myname}-httpd-logs-${timestamp}.tar
+#Check if inventory.html file exists or not
+FILE=/var/www/html/inventory.html
+if [ -f "$FILE" ]; then
+    echo "$FILE exists."
+else
+    echo "$FILE does not exist."
+    {
+	echo "<html>"
+	echo "<body>"
+	echo "<table>"
+	echo "<thead>"
+	echo "<tr>"
+	echo "<th>Log Type</th>"
+	echo "<th>&nbsp;&nbsp;&nbsp;&nbsp;Time Created</th>"
+	echo "<th>&nbsp;&nbsp;Type</th>"
+	echo "<th>&nbsp;&nbsp;Size</th>"
+	echo "</tr>"
+	echo "<tbody>"
+    }>>/var/www/html/inventory.html
+fi
+#Append the contents to end of file without overwriting the previous content
+TARFILENAME=/tmp/${myname}-httpd-logs-${timestamp}.tar
+FILESIZE=$(du -sh "$TARFILENAME" | awk '{print $1}')
+echo "<tr><td>httpd-logs</td><td>&nbsp;&nbsp;&nbsp;&nbsp;$timestamp</td><td>&nbsp;&nbsp;&nbsp;&nbsp;tar</td><td>&nbsp;&nbsp;&nbsp;$FILESIZE<td></tr>" | tee -a /var/www/html/inventory.html
+#Check if cron file exists or not
+CRONFILE=/etc/cron.d/automation
+if [ -f "$CRONFILE" ]; then
+    echo "$CRONFILE exists."
+else
+    #If not exists then create a new in /etc/cron.d/ folder
+    echo "$CRONFILE does not exist."
+    sudo echo "0 0 */1 * * root /root/Automation_Project/automation.sh" > /etc/cron.d/automation
+    sudo chmod 600 /etc/cron.d/automation
+fi	
